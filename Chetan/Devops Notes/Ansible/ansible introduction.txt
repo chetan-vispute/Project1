@@ -1,0 +1,72 @@
+Ansible:-
+
+An Ansible playbook is an organized unit of scripts that defines the tasks involved in managing a system configuration using the automation tool Ansible.
+Writing playbook is easy comapare to shell script and steps are also very less.
+
+It is an open source 
+setup is easy
+
+Used for :-
+
+1.Configuration management'
+2.Application Deployment
+3.Task Automation
+
+
+1.Inventory files will contain all node information
+2.Ansible.cfg will contain path to this inventory file and id and password and other impt files
+3. Agentless architecture..No need to install any agent/software on anisble nodes/clients.(no cleint server architecture)
+4.uses SSH commnucication
+5. Ansible is written in python.and is YAML based.
+
+It contains   Ansible Master/Contorller/Engine
+
+and Ansible nodes/clients
+
+6. Large numbers of ready to use modules for system management
+7. custom modules can be added if needed.
+
+We can manage remote node with our ansible even if python not install on it using raw module.
+
+if python is on remote node then easy to write playbook	
+
+====================================================================
+
+Configuring ansible:-- Providing nodes/client information to ansible master.
+
+
+We can install ansible in 3 ways:-
+
+using yum
+using pip
+using compile files
+
+
+Ansible uses pushed based mechanism
+
+windows node instances are controlled by winrm method
+
+
+or Ansible Controller
+
+Which can be installed on any linux os.
+Python is required to install  ansible
+Ansible controller can only be installed on Linux as ansible is a redhat product and windows doesn’t support
+.(steps….python install,install ansible package and generate key)
+
+•	For Node
+
+	Ansible follows SSH communication.
+	We install tool on node instances through yum repository. first we need to connect to node through SSH.
+	Ansibe connects to windows node instances using winrm method(windows based node instances can be managed)
+	Ansible is agentless tool(there is no client server architecture)
+	Ansible follows push based mechanism. Ansible controller pushes packages on node through playbook.
+	In organization, we don’t use root account and we use service account and for that we ask LDAP team to create service account and create ssh key for service account which will connect to all the required servers .then will be having no permission issue. this is for automation activity basically.
+	Ssh copy id is command to copy ssh key on multiple nodes.
+	SSH or secure shell is a network communication protocol that enables two computers to communicate(http is used).
+	It can transfer files using associate SSH file transfer(SFTP)or secure copy(SFP)protocols.SSH uses client server model.
+
+	The ssh command provides a secure encrypted connection between two hosts over an insecure network. This connection can also be used for terminal access, file transfers, and for tunneling other applications. Graphical X11 applications can also be run securely over SSH from a remote location.
+
+.
+=================================

@@ -1,0 +1,362 @@
+Dockerfiles Example:->>>
+
+Example 1:->
+
+
+vi Dockerfile
+
+FFROM nginx:alpine
+LABEL maintainer=”gaurav@gmail.com”
+COPY index.html /usr/share/nginx/html
+
+--------------------------------------------------
+Example 2:->
+
+vi Dockerfile
+FROM ubuntu:18.04
+RUN apt-get update -y
+RUN apt-get install git -y
+
+=====================================================
+
+Example 3
+
+FROM nginx
+COPY /root/opt/gaurav/index.html /usr/share/nginx/html
+------------------------------------------------------------
+Example 4
+
+FROM nginx
+WORKDIR /usr/share/nginx/html
+COPY index.html .
+
+-------------------------------------------------------------
+Example 5
+
+FROM nginx
+RUN mkdir -p /demo1/demo2/demo3
+RUN cd /demo1/demo2/demo3 && touch ghena.txt
+WORKDIR /usr/share/nginx/html
+RUN cd . && touch gaurav
+
+------------------------------------------------------------------
+Example 6
+
+FROM nginx
+WORKDIR /usr/share/nginx/html
+ADD index.html .
+EXPOSE 80   #  expose generally not used for web application
+------------------------------------------------------------------------
+Example 7:-
+
+FROM ubuntu:latest
+
+# Identify the maintainer of an image
+LABEL version="0.0.1"
+LABEL maitainer="gaurav"
+
+# Update the image to the latest packages
+RUN  apt-get update && apt-get upgrade -y
+
+# Install NGINX to test.
+RUN apt-get install nginx -y
+
+# Expose port 80
+EXPOSE 80
+
+# Last is the actual command to start up NGINX within our Container
+CMD [ "nginx", "-g", "daemon off;"]
+
+=============================================================================
+
+Example 8:->
+FROM nginx
+WORKDIR /usr/share/nginx/html
+ADD https://github.com/prakashk0301/maven-project . or
+
+RUN wget https://github.com/prakashk0301/maven-project .
+
+
+==================================================================================
+Example9:->
+
+FROM nginx:latest
+
+# Identify the maintainer of an image
+LABEL version="0.0.1"
+LABEL maitainer="gaurav"
+
+# Updateing the work DIR
+WORKDIR /usr/share/nginx/html
+
+# Replace Index.html with Custom file
+COPY index.html index.html
+
+
+so here you are copying content from root to the location mention in WORKDIR.
+=======================================================================================
+Example 10:->
+
+Assignment:-
+
+➤ Create Docker File by own.
+➤ Get the latest python image from Docker Repository.
+➤ Write down a simple python program or get it from internet.
+➤ Run Python Program inside the Container.
+➤ Tag and Push the Image to Docker Hub.
+➤ Remove Image from Local and Again execute it from Hub.
+
+
+
+Solution:-
+
+
+
+# Each instruction in this file generates a new layer that gets pushed to your local image cache
+FROM python:latest
+
+# Identify the maintainer of an image
+LABEL version="0.0.1"
+LABEL maitainer="gaurav.com"
+
+# Add Python Script
+ADD my_script.py /
+
+# Execute python script
+CMD [ "python", "./my_script.py" ]
+--------------------------------------
+below is the python script my_script.py
+
+n=15
+for i in range(0,n):
+	print (((n-(i+1))*' ')+(((2*i)+1)*'*'))
+for i in range(1,n):
+	print (((i)*' ')+(((((n-i)*2)-1)*'*')))
+
+# this is the script to create pyramid now we have to run this inside the container.
+and for that we hae modified our dockerfile.
+
+then run 
+
+docker run -t image name .
+
+then run
+docker container run <python:1.1>
+
+no need to give port and all because we have not mentioed all these things inside dockerfile.
+
+u will see pyramid
+============================================================================
+
+Example 11:->Install tomcat on centos.
+https://www.youtube.com/watch?v=85Qc87NeKEM&t=576s
+1. Pull centos from dockerhub.      
+2. intsall Java                     
+3. create /opt/tomcat directory
+4. change work directory to /opt/tomcat
+5. Download tomcat packages
+6. Extract tar.gz file
+7. Rename to tomcat dir.
+8.Tell to docker that it runs on port 8080
+9. start tomcat services.
+
+vi Dockerfile
+
+FROM cetnos:7
+RUN yum install java-11-openjdk-devel -y
+RUN mkdir /opt/tomcat
+WORKDIR /opt/tomcat
+ADD https://dlcdn.apache.org/tomcat/tomcat-9/v9.0.65/bin/apache-tomcat-9.0.65.tar.gz .
+                       # Search for tomcat download and copy link of tar.gz 
+RUN tar -xvzf apache-tomcat-9.0.65.tar.gz
+RUN mv apache-tomcat-9.0.65/* /opt/tomcat    # here u can rename the directory or move the content
+                                             #so here we are moving content to /opt/tomcat
+EXPOSE 8080
+COPY ./webapp.war /opt/tomcat/webapps
+CMD ["/opt/tomcat/bin/catalina.sh", "run"]      
+
+now build image and create the container and now 
+you can browse the page of tomcat.
+
+------------------------------------------------------------------------------------------
+
+Example 12:-
+
+FROM ubuntu
+RUN echo "my name is gaurav" > /tmp/test.txt
+----------------------------------------------------------------------------------------------
+Example 13:-
+
+FROM ubuntu
+WORKDIR /tmp
+RUN echo "my name is gaurav" > /tmp/test.txt
+ENV myname gaurav-p
+COPY testfile1 /tmp
+ADD test.tar.gz /tmp
+
+
+how to perfomred the lab:-
+
+after writing the above file follow the below steps for file creation.
+
+touch testfile1
+touch test
+tar -cvf test.tar test    # You are making the tar file out of test
+gzip test.tar              # to make zip file
+now u can remove test file as we already makde zip file out of test
+so
+rm -rf test
+now create image and create container
+once create container just do ls you will find all files there
+
+now if u do
+echo $myname    u will get gaurav-p
+
+---------------------------------------------
+LAB-
+
+Let’s create a Dockerfile with two EXPOSE Instructions, one with TCP protocol and the other with UDP protocol.
+Dockerfile-
+
+ 
+FROM ubuntu:latest
+EXPOSE 80/tcp
+EXPOSE 80/udp
+ 
+
+docker build -t expose-demo .  ------------------------à Build the Docker Image
+docker run -it --name container expose-demo /bin/bash--------à create the container
+docker image inspect --format='' expose-demo ----------------àverify the ports
+docker run -P -d expose-demo--------------àTo publish the ports
+
+=================================================================
+LAB 1:ARG outside the build stage i.e before FROM instruction
+
+Dockerfile-
+
+ARG version=latest
+FROM ubuntu:${version}
+
+
+docker build -t imagepp .----------------à to create the image
+
+docker images………………to check whether image is created or not
+
+
+
+ 
+
+LAB 2: ARG inside the build stage  
+
+·       An ARG declared before a FROM is outside of a build stage, so it can’t be used in any instruction after a FROM.
+
+·       To use the default value of an ARG declared before the first FROM use an ARG instruction without a value inside of a build stage:
+
+ 
+
+Dockerfile-
+
+ 
+
+ARG VERSION=latest
+
+FROM busybox:$VERSION
+
+ARG VERSION
+
+RUN echo $VERSION > image_version………..it will print the output in image_version file
+
+ 
+
+Output-
+
+docker build -t imageww .----------------à to create the image
+
+docker run -it --name cot11 imageww /bin/bash………………create container
+
+docker attach cot11……………go inside the container
+
+ls…………..u will be able to see the file image_version
+
+cat image_version……………….u will see the output as “latest”
+============================================================================================
+# Create volume through dockerfile.
+# the same you can create via commandline.gm Th
+
+FROM ubuntu
+VOLUME ["/myvolume"]
+==============================================================================
+https://www.youtube.com/watch?v=9f1y4ZlFaQk&t=484s
+https://www.youtube.com/watch?v=WmcdMiyqfZs
+
+https://www.youtube.com/watch?v=-2X4JP3HgYU
+https://www.youtube.com/watch?v=hlPnr6cQNvg
+https://www.youtube.com/watch?v=XiGUu3q2Mwo
+https://www.youtube.com/watch?v=hLALL17eDpg
+https://www.youtube.com/watch?v=tb4eDxdJscg
+
+
+dockerfile vs Entrypoint:-
+
+Lab:-
+
+vi dockerfile
+FROM ubuntu:16.04
+CMD echo 'Welcome to docker'
+
+now create container with -it as we want to see output generated by this container.
+docker run -it <image id>  OR docker run <image id>
+result is Welcome to docker
+we can overwite this on runtime by passing this
+docker run -it <image id> echo "welcome to aws"  OR docker run -it <image id> welcome to aws
+you will get welcome to aws
+means whatever mentioned in container got overwritten by this command.
+
+we can use multiple cmd inside docker
+vi dockerfile
+FROM ubuntu:16.04
+CMD echo 'Welcome to docker'
+CMD echo 'Welcome to python'
+
+it will consider latest one and give result as Welcome to python
+
+Now entrypoint instruction:-
+
+vi dockerfile
+FROM ubuntu:16.04
+ENTRYPOINT ["echo","hi docker"]
+now execute above
+result is hi docker
+now do
+docker run -it <image id> echo 'Hi Hari'
+result as below
+
+hi docker echo 'Hi Hari'  # not overwritten but getting apended.
+
+now
+
+vi dockerfile
+FROM ubuntu:16.04
+ENTRYPOINT ["echo"]
+CMD ["hI dOCKER"]   # Here command instruction will be argument for entrypoint instruction
+                    # u will get result as hI dOCKER which is possible with help of echo 
+					  command written in entrypoint
+			
+	docker run -it <image id>
+result is 	hI dOCKER
+
+but if u do here 
+docker run -it <image id> echo 'Hi Hari'
+result is Hi Hari
+===================================================================================================
+Plese note u can search image with below command alos
+
+docker images | grep <image name/id>
+
+you can cretate container and see output directly as 
+
+docker run <image name/id>
+
+
+					  
+					  

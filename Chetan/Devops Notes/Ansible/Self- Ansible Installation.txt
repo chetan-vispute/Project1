@@ -1,0 +1,37 @@
+
+Ansible Installation:- 
+
+
+To configure the PPA on your machine and install Ansible run these commands:
+
+$ sudo apt update
+$ sudo apt install software-properties-common
+$ sudo apt-add-repository --yes --update ppa:ansible/ansible
+$ sudo apt install ansible
+
+
+$ sudo apt update
+$ sudo apt update
+$ sudo apt install ansible
+
+Ansible is-
+1)infrastructure tool (EC2)
+2)configuration management tool ( tomcat insstallation)
+3)patching tool (Application patching)
+4)deployment tool (CI/CD deployment)
+
+continuous delivery-  It is fast ...directly reflect to the production/target server
+continuous deployment- It is slower than delivery.....step by step....testing - and other envirement ...then to target server
+
+CI part - create artifacts nd store it to artifactories
+CD part - taking the artifacts and deploy it to target server
+
+
+Developer- pushesh the code to bitbucket/ Github
+DevOps- pushes the JenkinsFile, DockerFile, Playbook on bitbucket
+		what ever written in the JenkinsFile will done automatically.
+
+ssh key gen- to create public and private keys
+
+What does ssh-keygen do?
+Ssh-keygen is a tool for creating new authentication key pairs for SSH. 

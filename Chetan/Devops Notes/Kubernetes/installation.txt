@@ -1,0 +1,146 @@
+
+k8 services:->
+============
+google k8 services
+azure k8 services
+amazon k8 services  (elastic k8 services)
+
+k8 installation tool:-
+
+minicube
+Kubeadm
+
+========================
+
+Problems without K8s.
+
+1.Container can not communicate each other.
+2.Autoscaling and load balancing was not possible.
+3.containers had to be managed carefully.
+
+docker swarm used 11% in market share
+K8 57 %
+
+                      ********Features of K8************.:-
+
+1. Orchastation (clustering of any number of containers running on different n/w)
+means making cluster of vm container+on premises container+cloud container)
+means combine all containers into one cluster.
+
+2. Autoscaling(vertical and horizontal autoscaling)
+3. Platform independant.
+4. Autohealing
+5. Fault tolerance(Node/pod failure)  # it always tracks pod and if it fails it creates a newone
+6. Rollback
+7. Health monitoring of container
+8. Batch execution(means u can all task in yaml in manifest file )one time sequential.
+
+Plesae note:-K8 directlly dont manage container ...it manages pod.
+==========================================================================
+                     ******Difference between K8 and docker swarm:->>>>>
+
+*Features
+*k8
+*DS
+
+1.Installation and cluster configuration:->
+k8-complicated and time consuming.
+DS- Fast and easy
+
+2.Support:-
+
+k8-can work with all types of container like Rocket and docker
+DS- Only Docker
+
+3.GUI:-
+
+K8-GUI available
+DS-GUI not available
+
+4 Data Volume:-
+
+K8- Only share within containers in the same pod.
+DS-can share with containers in the same and different pods
+
+4 Autoscaling
+
+K8-Autoscaling(vertical and horizontal autoscaling)
+DS-not available
+
+4 Logging and monitoring
+
+K8-Inbuilt tool present for monitoring
+DS-use 3rd party tool like splunk.
+
+
+Please note:-There is one tool competitor to K8 is Apache Marathon.
+
+-----------------------------------------------------------------------------------------
+
+K8 cluster consists of master and Node/worker.
+It is master -slave or client server architecture.
+Cluster can be any of the below.
+
+1 master + 1 node
+1 master + multiple nodes
+multiple master+ multiple nodes.
+
+Under each node you can create number of pods,
+containers are created under pod.
+k8 communicate with pod only because each container has its different metadata and architecture.
+
+cluster:->node:->pod:->container:-> Application running/application microservice
+===============================================================================
+ -----------------------------------------------------------------------------
+ 
+ 
+                                     * Minikube installation**
+									 
+1. AWS account
+2. Select ubantu 18.04 and cpu  t2 medium having 2 cpu
+3. now login as ubuntu
+sudo su -
+apt update && apt -y install docker.io  # no need to download only install as ubuntu already has it.
+									 
+now install kubectl
+ 
+
+$ curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+$ sudo touch /etc/apt/sources.list.d/kubernetes.list 
+$ echo "deb http://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee -a /etc/apt/sources.list.d/kubernetes.list
+$ sudo apt-get update
+$ sudo apt-get install -y kubectl
+
+you can check version via kubectl version command
+
+
+install Minikube
+https://phoenixnap.com/kb/install-minikube-on-ubuntu
+and then start with below
+minikube start --driver=docker
+========================================================================
+Install and set up the kubectl tool: -
+
+https://kubernetes.io/docs/tasks/tools/
+
+Install Minikube: -
+
+https://minikube.sigs.k8s.io/docs/start/
+
+
+Install VirtualBox: -
+
+https://www.virtualbox.org/wiki/Downloads
+
+https://www.virtualbox.org/wiki/Linux_Downloads
+
+
+Minikube Tutorial: -
+
+https://kubernetes.io/docs/tutorials/hello-minikube/
+
+If the minikube installation has been done on the macOS, then to access the URL on the local browser, we need to do a few steps to get the service URL to work. Those steps are covered on this documentation page: -
+
+https://minikube.sigs.k8s.io/docs/handbook/accessing/#using-minikube-service-with-tunnel
+
+=====================================================================================================

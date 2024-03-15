@@ -1,0 +1,330 @@
+						BEST WAY TO INSTALL DOCKER ON LINUX 
+											
+To launch docker on EC2 instance use below commands.
+first launch ec2 instance and then use below commands.
+To configure Docker, Use below commands-
+
+yum update -y
+yum install docker
+service docker start
+systemctl enable docker
+service docker status
+
+                                     Docker image:->
+
+Docker  images is 
+
+	combination of layer.
+	Always prefer official image.
+	Based on stars/rating…you can select the image from docker hub.
+	In real time, we can not use public images.
+	Scanner checks the layers.
+	Aqua/Qualysguard docker scanning/Notary are the tools for scanning images.
+	Docker search always points to docker hub.
+
+In docker,everything is based on the images.
+
+1.  Image is a combination of filesystem and parameters.
+    Image contains binaries and dependancies
+2.  Only application related binaries and dependancies.
+    Images contains data require to run the images.
+
+
+docker images:-  to list the images
+Images dont contains ccomplete OS and os packages because its responsibiltiy of docker engine to execute
+the image.
+
+when u hit docker images command:-
+
+repository name is image name.
+tag defines the version of image.
+Image id is random generated image id which is generated while u download any image
+
+1.  Docker can build images automatically by reading the instructions from a Dockerfile.
+
+2.  A Dockerfile is a text document that contains all the commands a user could call on the
+    command line to assemble an image.
+	
+3.  A Docker image consists of read-only layers each of which represents a Dockerfile instruction.
+4.  Command to build image from Dockerfile:
+    docker build -t <path_of_docker_file>
+							  
+➤ -t − is to mention a tag to the image.
+➤ ImageName − This is the name you want to give to your
+image.
+➤ TagName − This is the tag you want to give to your image..
+➤ Dir − The directory where the Docker File is present
+docker build -t ImageName:TagName dir 
+
+
+Create Custom Nginx Image and Execute it.
+Tools we will use to Edit Docker File: Visual Studio
+➤ Download Link of Visual Studio.
+https://visualstudio.microsoft.com/downloads/
+➤ Create Docker File.
+
+here in visual studio code u need to install docker extension if you have to work with dockerfile.
+then open the folder where u want to create docker file and click on crete new file.
+now write FROM and all and suppose if u write any two words and auto populate doesnt come
+then press control and space.
+
+now 
+docker build -t ImageName:TagName dir
+you will see ur image in your images docker images.
+now run the command assemble
+docker run -d -p 4000:90 newimage::1.1                       										 
+      ------------------------------------------------------------------------------
+
+
+war is build through maven which developement part.and main issue comes with
+running war file in differnt env as we need to run application in differenct dependancies.
+so issue comes as code run well in QA but not run in stg or QA env.
+
+Suppose you want to deploy warfile or if you want to deploy java based app...you need jdk.
+For python based  you need python ...for .net you need.net jdk.
+so basically we need app related dependancies.
+
+O/S related dependancies will be taken care by docker engine.
+and in virtual machine we used to install jdk on deployment server if we want to run java based
+application.
+
+                                        Docker hub repository
+
+https://hub.docker.com
+
+a.  Docker images can be download from docker hub.
+b.  Images can be commited with changes and have multiple versions.
+    If u dont provide specific version while pushing..the client defaults to latest.
+	 
+	 
+                                   Docker image differenciation:-
+  
+	1. Base Image:-
+                  Images that have no parent image,usually images with an OS like ubuntu,busybox
+				  or debian.Big image in size.
+				  
+	2.  Child Image:-
+
+                 build on base image and add additiinal functionality.
+                like providing some interactive CLI or some interactive colours.				 
+
+    3. Officaial Image:-
+
+           Images that are officially maintained and supported by docker folks .Typically one word long.
+
+    4.  User Images:-
+
+                  The images which are created and shared by users.
+				  They are build on base image and add additinal functionality.
+                  Typically these are formated as user/image-name.   	
+----------------------------------------------------------------------------------------------
+
+Loging to https://hub.docker.com.
+
+You will also see here whatever repository you pushed here so far.
+generally first image in docker hub is official image only.
+Left hand you can search by typing image name like
+
+Hellow world
+ngnix
+if u click on it u will get detailed information abt image 
+Now on right side click on Explore button ,you will see all offical images.
+which are supported by docker commuity,
+from image on docker hub only,you will get path to download the image.
+
+Now how to download an image:-
+
+docker pull <image name>
+
+Pull specific version
+
+docker pull <image name>:<image_version>
+when u click on image u will get all version which u can download on docker host machine,
+
+docker pull mysql:5.7
+
+If dont mention version it will dowload latest.
+
+Now u can see in docker images
+
+docker hub is like git hub...where u can push and download or checkout.
+
+Docker layers:-
+
+Each image consists of layers
+Docker makes use of union file systems to combine these layers into single image.
+
+suppose we have 5 layers then each layer has union filesystem.
+
+layer 1 will be base image filesystem with no depndancies
+layer 2 will have dependancies on layer 1
+layer 3 will have dependancies on layer 2
+layer 4 will have dependancies on layer 3 and so on.
+
+Means to run image on with layer 4 then all dependance layers like 3,2,1 should be present,
+
+Union file system allows files and directories of separate file systems,known as branches.
+
+Show image layers:-
+
+docker history <image_name>
+
+history command shows different layers,commands used for each layer,and exact size of each image.
+
+	u will see base image is the oldest one.
+	most updated layer will be present at the top.
+	each layer has its own file system.
+	
+	***********To have complete metadata of image then run below command.
+	
+	docker inspect <image name>  #complete info
+	
+	it will show id of ur image ,repo tag of ur image,you will get complete info or ur image.
+	version alos u can see here.
+	
+=================================================================================================	
+	                            *** Docker image tagging***
+	
+	
+	Docker tags:-  conveys useful info abt the specific image version/variant.
+	
+	Docker image doesnt have the name.
+	when u run command docker images u wont find any cloumn with name tag.
+	
+	You will get column of repository(ngnix,mysql) which is the name of parent directories which the name 
+	file system u have.
+	
+	Tag always associated with image id.
+	
+	# so u can tag while building ur image(u can also tag at the time of
+	pulling the image). or u can tag by docker tag command.
+	
+	go to docker images you will find ubantu image then
+	
+	docker tag <source name > <target name>
+	
+	docker tag ubuntu ubuntulatest
+	(please note we have only one image of ubntu locally hence it took by default)
+	
+	Now docker images u will see new image created with same docker image id and same size.
+	
+	docker tag mysql:5.7 ubuntulatest:test
+	Now docker images u will see new image crated with same docket image id and different tag.
+	
+	Disadnatage of not tagging image:-
+	docker tag mysql:5.7 ubuntulatest
+	
+	here it will take tag as latest as not defined in command.
+	
+	By default it takes latest tag.
+	
+	example:-
+	
+	Suppose u working on one application and u creating docker image for it.
+	Ur application using ubuntu debian system in a base image.
+	suppose ubantu not providing tag with their images and u want to select lastest one in ur base image.
+	whenver customer download it will be ubantu latest image.
+	and if ubantu pushes its code regularly on that image then its possibility application will be break.
+	because ur code is not tested with latest code of ubantu.
+	
+	but if ubantu is providing tag with their images. 3.0, 3.1 and if u tested ur image with 3.0.
+	so u always specify that image in ur base image which is fully tested.
+	It will help u to maintain version of ur system.
+	Maintain version depend on env like tetsing ,prod ,STG.
+	May be ur image compatible for prod/tesing/stg.
+===================================================================================================	
+	                          Upload docker images:-
+	
+
+➤ Docker Cloud uses Docker Hub as its native registry for
+storing both public and private repositories. Once you push
+your images to Docker Hub, they are available in Docker
+Cloud.
+➤ Command to login:
+docker login
+➤ Push Image on Docker Hub:
+                     docker image push USER/Image-name.
+
+                                          LAB:-
+
+so just follow the below commands.
+
+docker images
+docker login
+enter username and password of dockerhub.
+
+u will get message that ur password is strored unencrypted in /root/.docker/config.json
+
+so just do 
+
+cat /root/.docker/config.json
+
+you will get json and in that you will find the authkey ..if u lost the key then anyone can login to ur account.
+
+so once done ur work just do docker logout.it will remove key from this location.
+
+docker image push <imagename>
+
+it should not be single image name as it is for offical image only and wont allow to push
+hence image name should be like  gaurav/patel or gaurav/ngnix or gaurav/ngnix-version1 or
+gaurav/ngnix-2.0 and so on.
+
+very important:  here gaurav is the account name of the docker hub.
+
+so format of tagging is account name / image name
+
+now if u dont specify tag it will take latest on hub.but latest should be present on local.
+
+now create tag on local now push 
+
+docker image push <imagename:1.1>
+
+You will get message as 
+
+layer already exist 
+
+as u already pushed the same image with differnt tag on hub.
+but new image with differnt tag will be pushed on hub.
+
+docker internally verifies where is the change.same applies for downloading.
+it will download only that part which is different from the earlier one,(so it wont upload earlier
+filesystem and it will only upload filesustem which is new)
+so run time it just changed the tag and image data is same.
+this is most optimised way to keep the images.
+same mechanisam is applicatble for downloading also.
+and above case we dont ahve any change in layer or in filesystem.
+
+now once done with taks  docker logout
+
+now do cat /root/.docker/config.json
+
+You will see ur key got removed.
+
+when u login ur machine from unsecure machin,n/w always do docker logout.
+
+Please note:- You can go inside the conainer by attach command also apart from exec.
+============================================================================================	  
+Q. How to create docker images from existing containers?
+
+Ans: docker commit <existing container ID> <New Docker image Name>
+
+ex: docker commit 5d18f41de60d pythonapp-final:01 
+
+
+------------------------------------------------------------------------
+
+Push docker images to Dockerhub/Docker Private Registry / ECR (AWS Elastic Container Reg):-
+
+docker tag <exiting docker image name> <dockerhubid/image name:version>
+
+
+ex: docker tag nginxapp pkw0301/pythonapp:01 
+
+
+docker tag nginxapp pkw/pythonapp:01 
+
+
+docker login
+docker push pkw0301/pythonapp:01 
+
+If u face issue in starting exec command then instead of bash in the last try sh.

@@ -1,0 +1,244 @@
+Ansible Ad-hoc commands:-
+
+Two ways to work with nodes.
+
+1.Ad-hoc commands   :single commands
+
+2. Playbooks     :all adhoc commands we write in a playbook  multipla task its like shell script
+
+free -m #ram usage
+
+
+ansible 192.11.28.44 -m ping   # ping is a module in the adhoc commands(ansible 192.11.28.44 -m ping)
+
+so adhoc commnd is going to use ping module to peform a task on node.
+based on a task ,need to select a module.
+so our command consits of target and module.
+if we want to execute single command then why to write playbook/
+
+2.
+
+To get uptime on server
+
+ansible 192.11.28.44 -m shell -a "uptime"
+
+shell is module to run the command on node server.
+a is to write the argument.
+uptime is argument
+
+3.
+ansible 192.11.28.44 -m shell -a "free -m"
+
+4. if we create our own inventory file then either u change the path of this file in ansible.cfg or
+
+mention the file in command like below
+
+
+ansible -i <new inventory file name> all -m shell -a "free -m"
+
+
+5.  To list down all modules
+
+ansible-doc -l    #2800 modules
+
+ansible-doc -l | wc -l
+
+ansible-doc -l | grep shel    #to get info
+
+
+How ansible works:-
+
+once u hit command,module is pushed in ur remote node
+ansible execute them over ssh on node,and once task is complted,module will be removed from node.
+
+where modules gets saved on node?
+
+go to node
+ls-lrta
+
+u will find .ansible and in that tmp directory
+
+once u run command ,module(python script) will be pushed to this location. # hence remote node should have pytho installed.
+
+ANSIBLE_KEEP_REMOTE_FILES=1 ansible all -m shell -a "uptime"
+
+now u can see python modules there on node under temp folder,no of commands = no of python script =under temp.
+
+when this python script execute,rsult goes to controm node,
+
+
+ansible all -m shell -a "l"
+
+Example2:-
+
+ansible all -m shell -a "sleep 5 ; echo 'hi'"
+
+you will observe command gets executes on each node parallely
+
+for that in ansible.cfg files we have
+
+forks   =5 
+
+ means task will executed on 5 servers at a time.
+you can change this value
+
+================================================================
+https://docs.ansible.com/ansible/latest/collections/ansible/builtin/copy_module.html
+
+*************************Transfer a file**********************
+
+To check if node is reachable or not---ping module is there.
+
+Example1:-
+
+ansible node1 -m copy -a "src=./hosts dest=/tmp"
+
+#here it will create a hosts file under tmp folder in destination if u dont specity the file name in tmp.
+
+
+ansible node1 -m copy -a "src=./hosts dest=/tmp/gaurav"
+
+# here only contents will be moved to gaurav file   ....pl note gaurav file was not there earlier it is created by this module.
+
+if u re-run the same command u will get result changed=false  means it maintains idempotency.
+
+if u make changes space /any content then if u re-run then it will show successfully changed.
+
+
+Example2:-  content module # means we dont have any file at source side and only we want to send some content on dest,
+
+ansible node2 -m copy -a "content='hellow world' dest=/tmp/gaurav"
+
+You need to mention the file name here mandataroy...existing or if u want to create new file u want to create.
+
+
+Example3:-
+
+If u send some other content in the same file then previous contents will be gone so for that
+
+ansible node2 -m copy -a "content='gaurav is best' dest=/tmp/gaurav backup=yes"
+
+so this time ur backup is created with the samefilename with . extentsion.timestamp.
+
+
+Example 4:-
+
+When u cat the contents in destination file u will see content and terminal in same line.
+Now i want in different line then in that case:-
+
+ansible node2 -m copy -a "content='gaurav is best\n' dest=/tmp/gaurav backup=yes"
+
+
+*************Download a file from node to Ansible master*************************
+
+fetch module:-
+
+a.  ansible all -m fetch -a "src=/tmp/gaurav dest=./golo"
+
+so result at you master node below u can see.
+
+New directory will be created at source side with the same name i.e. golo.
+
+
+golo
+├── 172.31.22.44
+│   └── tmp
+│       └── gaurav
+└── 172.31.29.150
+    └── tmp
+        └── gaurav
+
+b. Now i dont want directory structure then,
+
+ansible all -m fetch -a "src=/tmp/gaurav dest=./golo/{{inventory_hostname}}_demo.txt flat=yes"
+
+
+[root@ip-172-31-27-218 ansible]# tree golo/
+golo/
+├── 172.31.22.44_demo.txt
+└── 172.31.29.150_demo.txt
+
+===================================================================
+
+Create/delete a file or directory using Ansible adhoc commands.
+
+ansible all -m file -a "path=/tmp/king state=touch"   #file will be created with default mode as 0664
+
+
+ansible all -m file -a "path=/tmp/king1 state=touch mode=777"    # with 777.  
+
+
+To remove file
+
+ansible all -m file -a "path=/tmp/king state=absent"
+
+To create directory
+
+ansible all -m file -a "path=/tmp/bing state=directory" 
+
+to create file under root # permission denied then like u put in command sudo u can do below in script
+
+To delete directory
+
+ansible all -m file -a "path=/tmp/bing state=absent" 
+
+
+# to see all commands simply run 
+
+ansible
+ansible -h
+
+
+# to see number of ips in one group then
+ansible all -m ping --list-hosts
+
+ansible node1 -m ping --list-hosts
+
+
+File modules:-
+
+https://docs.ansible.com/ansible/2.9/modules/list_of_files_modules.html
+
+Files modules-
+
+acl – Set and retrieve file ACL information
+
+archive – Creates a compressed archive of one or more files or trees
+
+assemble – Assemble configuration files from fragments
+
+blockinfile – Insert/update/remove a text block surrounded by marker lines
+
+copy – Copy files to remote locations
+
+fetch – Fetch files from remote nodes
+
+file – Manage files and file properties
+
+find – Return a list of files based on specific criteria
+
+ini_file – Tweak settings in INI files
+
+iso_extract – Extract files from an ISO image
+
+lineinfile – Manage lines in text files
+
+patch – Apply patch files using the GNU patch tool
+
+read_csv – Read a CSV file
+
+replace – Replace all instances of a particular string in a file using a back-referenced regular expression
+
+stat – Retrieve file or file system status
+
+synchronize – A wrapper around rsync to make common tasks in your playbooks quick and easy
+
+tempfile – Creates temporary files and directories
+
+template – Template a file out to a remote server
+
+unarchive – Unpacks an archive after (optionally) copying it from the local machine
+
+xattr – Manage user defined extended attributes
+
+xml – Manage bits and pieces of XML files or strings

@@ -1,0 +1,97 @@
+Ansible Master Installation:-Method 1.
+
+
+1.	Create Redhat EC2 instance for demo, one is for Ansible Master 
+2.	SSH your Master instance (1st Instance)->login as ec2-user 
+3.	sudo su -
+4.	yum update -y
+5.	yum install python3.8   # ansible need min 3.7 version of python
+6   python3.8 --version  # to check python version....min python 3.7 version is required for ansible.
+7.	pip3.8 install ansible
+8.	Check for Ansible version ansible --version (if you can’t see any ansible version then uninstall the ansible package pip3 uninstall ansible, exit from root user then type sudo su - and reinstall pip3 install ansible)
+9.	Now create a directory mkdir -p /etc/ansible and change your directory cd /etc/ansible
+    
+10.	Create public/private rsa key ssh-keygen -t rsa and you need to Enter 3-4 times when asked.
+11.	Check for ssh key cd /root/.ssh   
+12.	View the key cat id_rsa.pub
+13  SSH Ansible Node Machine (2nd Instance) user name ec2-user then sudo su -
+16.	Change your path and open authorized_keys file vi /root/.ssh/authorized_keys
+17.	Copy id_rsa.pub key from Master node (1st Instance) and paste in Ansible Node (2nd Instance) authorized_keys file at last vi /root/.ssh/authorized_keys 
+(Don’t delete anything from the file)
+
+18.	On Ansible Node instance (2nd Instance) we need to allow PermitRootLogin 
+
+vi /etc/ssh/sshd_config
+Search for /PermitRootLogin and uncomment
+Once you uncomment then restart sshd service   
+service sshd restart
+
+19.	Now you can access your client instance from Ansible Master 
+ssh <private ip of ansible node>
+
+20.	If you are able to ssh Ansible Node VM from Ansible Master then you are good to go,
+exit from Ansible node terminal by typing below command
+exit                                                                                                    
+
+21.	If we run ansible <private ip of ansible node> -m ping        (Ansible Master)
+   We will get error warnings, because hosts file is empty. To fix these warnings, please follow below steps.
+   
+22.In real projects, we have 1000 nodes then we create host file/inventory file.
+Ping is the module.copy is also module.In playbook we have to use modules.100s of modules.
+To check my instances we are getting warning as no invenoty files.
+Every master server we have inventory in that all node information will be there.
+
+22.	We need to create groups, go to Master Node, 
+cd /etc/ansible and list files ll and update the Ansible Node information in hosts file                                                      
+   
+cd /etc/ansible
+vi hosts
+[amazonweb]  #there should not be any space
+<private ip of ansible node> or <alias> or <dns >or <public ip>
+   
+   
+Then run command as 
+
+ansible <public ip/private ip/all/<the name of group u created in host file> -m ping   or
+
+
+ansible 192.11.28.11 -m ping     # this ip should be available in hosts file
+
+ansible 192.11.28.11:192.11.28.51 -m ping
+
+ansible all -m ping
+
+ansible group1:group2 -m ping
+
+
+suppose you want to club two groups in one group then
+
+[group:children]
+
+group1
+group2
+
+while running the command u need to mention as
+
+ansible group -m ping
+
+-----------------------------------------------------------------------------
+============================================================================
+
+Different locations of ansible.cfg file.
+
+Priority of ansible.cfg file.
+
+ANSIBLE_CONFIG environment variable.
+./ansible.cfg   from the current directory.
+~/.ansible.cfg  file present in home directory.
+/etc/ansible/ansible.cfg default ansible.cfg file.
+
+================================================================================
+
+BASIC STRUCTURE
+
+Nodes are managed by ansible master
+we have inventory file to have information about nodes
+we have ansible.cfg to have all setting like path to hosts file and all
+and we have module (predefine scripts/program written in java)

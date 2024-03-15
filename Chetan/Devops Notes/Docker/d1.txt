@@ -1,0 +1,1055 @@
+	
+ **************************************Docker file***********************************
+ Contains  commands and arguments.
+It contains instructions.
+base image
+app related dependancies 
+ (if we want to deploy war file..if you want to run java based app, so you need jdk)
+ 
+ =====================================================================================
+                                        1. FROM:-> 
+  
+    The FROM instruction initializes a new build stage and sets the Base Image for subsequent 
+    instructions.
+    A valid Dockerfile must start with a FROM instruction.
+    Base Image can be any valid image.
+
+  ➤ Format:
+  FROM <image>[:<tag>]
+  --------------------------------------------------------------------------------------------------
+  
+                                       2. MAINTAINER:->
+									   
+Author of the dockerfile, description about the Dockerfile/ The MAINTAINER instruction sets 
+the Author field of the generated images.
+	Syntax:
+MAINTAINER <name>
+						   
+The LABEL instruction is a much more flexible version of this and you should use it instead, 
+as it enables setting any metadata you require, and can be viewed easily, for example with docker inspect.
+ To set a label corresponding to the MAINTAINER field you could use:		
+
+Example:->
+	
+	FROM nginx:alpine
+    LABEL maintainer=”gaurav”
+    COPY index.html /usr/share/nginx/html
+
+   *** Once image is build you can see the output as
+   
+   docker inspect <image_id>
+   you will see author is gaurav.
+
+ 
+                                       2.  LABEL :->
+  
+  LABEL added to image to organize images by project,record licensing information.
+  Labels are used in Dockerfile to help to organize your Docker Images. 
+ Labels are key-value pairs and simply adds custom metadata to your Docker Images.
+
+    ➤ For each label, add a line beginning with LABEL and with
+    one or more key-value pairs.
+    ➤ LABEL com.example.version=“0.0.1-beta"
+    ➤ LABEL vendor1="ACME Incorporated
+	Some key points associated with the LABEL instructions are as follows:
+•	To include spaces inside a label, you can use quotes.
+•	You can use more than one labels in a Docker Image.
+•	Labels from parent Images are inherited to your Image.
+
+Example-
+
+LABEL "name"="website"
+LABEL "tutorial-name"="docker"
+LABEL website="Future"
+
+•	For multi line labels, you can use backslashes.
+
+Example-
+
+LABEL desc="This is docker tutorial with \
+                        Ubuntu container"
+
+•	Docker allows you to specify multiple labels in a single line.
+
+Example-
+LABEL tutorial1="Docker" tutorial2="LABEL INSTRUCTION"
+
+•	If labels with same names exist even though they have different values, the last one overrides.
+
+Example-
+
+LABEL tutorial1="Docker" tutorial1="LABEL INSTRUCTION"
+
+Dockerfile-
+	
+	FROM ubuntu
+	LABEL "name"="website"
+    LABEL "tutorial-name"="docker"
+    LABEL website="Future"
+	LABEL desc="This is docker tutorial with \Ubuntu container"
+	LABEL tutorial1="Docker" tutorial2="LABEL INSTRUCTION"
+	LABEL tutorial1="Docker" tutorial1="LABEL INSTRUCTION"
+	
+	
+	Now docker inspect <container-id>…………………………….. To check the labels of a particular Image
+	under Labels you can see all labels which u have mentioned in the dockerfile.
+	
+                                       3.	RUN :-> 
+									   
+• Download packages during docker image creation/It is often used for installing software packages.
+•	When docker daemon starts creating a image it executes the run command.
+•	we can use multiple run instructions in a dockerfile.
+•	If we want to download multiple packages then we can write it in a single run command
+    so that image size will not increase.
+
+  
+  RUN instruction will execute any commands in a new
+        layer on top of the current image and commit the results.
+       ➤ The resulting committed image will be used for the next step
+         in the Dockerfile.
+		 
+    ➤ FROM ubuntu:14.04
+    ➤ RUN apt-get update
+    ➤ RUN apt-get install -y curl
+
+1.	Shell form-
+Syntax-
+RUN <command> 
+o	shell form, the command is run in a shell, which by default is /bin/sh -c on Linux or cmd /S /C on Windows.
+o	In the shell form you can use a \ (backslash) to continue a single RUN instruction onto the next line.
+o	Example-
+     RUN apt-grt update && apt-get install -y\
+         git\
+         cvs\
+Note-
+	apt-get update and apt-get install are executed in a single run instruction.
+	This is done to make sure that the latest packages will be installed.
+	if apt -get install were in a separate run instruction, then it would reuse a layer added by apt-get update, which could have been created a long time ago.
+
+2.	Exec form-
+Syntax-
+RUN ["executable", "param1", "param2"] 
+o	exec form, we need to mention the /bin/sh -c on Linux or cmd /S /C on Windows, 
+   else it will not show the correct output.
+
+                                        4. CMD :->
+										
+  CMD instruction should be used to run the
+           software/application contained by your image, along with any arguments.
+		   
+➤ CMD [“executable","param1","param2"]
+➤ There can only be one CMD instruction in a Dockerfile. If you
+list more than one CMD then only the last CMD will take
+effect.
+
+➤ The main purpose of a CMD is to provide defaults for an
+    executing container.
+CMD                                          
+-----> execute any command during container creation (start/stop the service,enable the services
+or execute any script like shell script,python script,powershell script).
+your services are depend on the script.so our aim that script should run first and then service
+and to set the priority we have entrypoint came in picture.
+CMD command cannot be used to building my docker image
+•	When used in the shell or exec formats, the CMD instruction sets the command to be executed when 
+    running the image.
+•	The default command which we have set in the dockerfile, can be overridden from
+    command line when docker container runs.
+
+
+There are 3 FORMS:>
+
+       ****Most preferred form is exec form.
+	   
+	   1.	exec-:>
+  Syntax-
+  
+CMD ["executable","param1","param2"] 
+
+o	The exec form is parsed as a JSON array, which means that you must use double-quotes (“)
+     around words not single-quotes (‘).
+o	Example 1-
+
+docker run -I -t ubuntu /bin/bash
+The above command will be represented in the Dockerfile as- 
+
+CMD [“/bin/bash”]……………………..executable=/bin/bash
+CMD [“/bin/bash”,”-i”]………………executable=/bin/bash , parameter=-i
+
+
+
+2.	shell form:->
+
+   Syntax-
+CMD command param1 param2 
+
+o	If you use the shell form of the CMD, then by default <command> will execute in /bin/sh -c.
+    Hence no need to mention.
+
+o	LAB-
+
+Dockerfile-
+
+#CMD-shell form
+FROM ubuntu
+RUN apt-get update -y
+CMD echo "Hello world"
+
+
+3.	Combination of ENTRYPOINT and CMD
+
+Syntax-
+CMD [“param1”,”param2”]
+
+
+Dockerfile-
+
+FROM ubuntu
+RUN apt-get update -y
+ENTRYPOINT [“/bin/echo”,”Hello”]
+CMD [“World”]
+
+
+
+=============================================================================================================
+                                              ENTRYPOINT ----->
+
+ similar to CMD, used to execute command during  container creation but it executes command before CMD 
+ (it has higher priority over CMD) overwrites what cmd function does. 
+ It says once done with your docker image which command needs to be executed first 
+ when you run docker container.
+
+
+entrypoint behaves similarly to cmd. And in addition, it allows us to customize the
+ command executed at startup.
+Like with cmd, in case of multiple entrypoint entries, only the last one is considered.CMD                                          
+-----> execute any command during container creation (start/stop the service,enable the services
+or execute any script like shell script,python script,powershell script).
+your services are depend on the script.so our aim that script should run first and then service
+and to set the priority we have entrypoint came in picture.
+CMD command cannot be used to building my docker image
+•	can be used above or before CMD.
+•	We can not overwrite the value which is possible in case of CMD instruction. This is the main difference between CMD and ENTRYPOINT.
+
+                            
+*************There are 2 forms-
+
+Most preferred form is exec.
+
+1.	exec form-
+
+Syntax-
+ENTRYPOINT ["executable", "param1", "param2"] 
+
+Example-
+
+Dockerfile-
+#ENTRYPOINT-exec form
+FROM ubuntu
+RUN apt-get update -y
+ENV name abc
+ENTRYPOINT ["/bin/echo", "Hello", "$name"]
+o	……… executable=/bin/echo, parameter1=Hello, parameter2=$name
+
+Output-
+Here we will not get the correct output as we have not mentioned the “bin/bash -c” in the instruction.
+ So, it will print $name as it is and will not pull the variable value.
+
+output as Hello $name
+To avoid the above issue, we need to mention the complete command so that it will the variable value correctly.
+
+Dockerfile-
+
+#ENTRYPOINT-exec form
+FROM ubuntu
+RUN apt-get update -y
+ENV name abc
+ENTRYPOINT ["/bin/bash", "-c", "echo Hello, $name"]
+
+now u will get output as
+Hello,abc
+
+2.	shell form-
+Syntax-
+ENTRYPOINT command param1 param2
+
+LAB-
+
+Dockerfile-
+
+#ENTRYPOINT-shell form
+FROM ubuntu
+RUN apt-get update -y
+ENV name abc………………….set variable “name”=abc
+ENTRYPOINT echo Hello, $name……………Here it will pull variable $name=abc and will print the output as “Hello, abc”
+
+
+
+
+
+							5 EXPOSE :->
+
+EXPOSE instruction indicates the ports on which a container listens for connections.
+EXPOSE                 -----> to expose docker container port or default port of your app
+(only define if your application works on any custom port ex 10000 port number,
+ no need to define if application works on default port ex. 80 (apache))
+➤ EXPOSE <port>
+EXPOSE
+•	The EXPOSE instruction exposes a particular port with a specified protocol inside a Docker Container.  
+•	In the simplest term, the EXPOSE instruction tells Docker to get all its information required during the runtime from a specified Port. 
+•	These ports can be either TCP or UDP, but it’s TCP by default. 
+•	It is also important to understand that the EXPOSE instruction only acts as an information platform (like Documentation) between the creator of the Docker image and the individual running the Container.  
+•	it is use inside the dockerfile as an instruction whereas “-p=publish” it is a flag that you use when you're writing docker commands which allows you to expose your container externally.
+
+•	Some points to be noted are: 
+•	It can use TCP or UDP protocol to expose the port.
+•	Default Protocol is TCP if no other protocol is specified.
+•	It does not map ports on the host machine.
+•	It can be overridden using the publish flag (-p) while starting a Container.
+
+Syntax: 
+EXPOSE <port>/<protocol>
+
+Examples:
+By default, EXPOSE assumes TCP. You can also specify UDP:
+EXPOSE 80/udp
+To expose on both TCP and UDP, include two lines:
+EXPOSE 80/tcp
+EXPOSE 80/udp
+In this case, if you use -P with docker run, the port will be exposed once for TCP and once for UDP. Remember that -P uses an ephemeral high-ordered host port on the host, so the port will not be the same for TCP and UDP.
+Regardless of the EXPOSE settings, you can override them at runtime by using the -p flag. For example
+$ docker run -p 80:80/tcp -p 80:80/udp ...
+
+LAB-
+
+Let’s create a Dockerfile with two EXPOSE Instructions, one with TCP protocol and the other with UDP protocol.
+
+Dockerfile-
+
+FROM ubuntu:latest
+EXPOSE 80/tcp
+EXPOSE 80/udp
+
+Output-
+docker build -t expose-demo .  ------------------------ Build the Docker Image
+docker run -it --name container expose-demo /bin/bash-------- create the container
+docker image inspect --format='' expose-demo ----------------verify the ports
+docker run -P -d expose-demo--------------To publish the ports
+
+
+                                          6.  ENV :->
+										  
+ENV instruction sets the environment variable
+    <Key> to the value <value>.
+	
+ENV   -----> define environment variables(Like example of
+dev,qa and prod we have diffrent passowd for difference env which is defined here)
+•	In real time no one prefer ENV option we prefer “scop” in Kubernetes.
+
+Example:
+
+ENV MY_NAME="John Doe"
+ENV MY_DOG=Rex\The\Dog
+ENV MY_CAT=fluffy
+
+
+
+    
+➤ To make new software easier to run, you can use ENV to
+  update the PATH environment variable for the software your
+  container installs.
+
+env can be usename or password 
+value of env should be in key value pair.
+
+➤ ENV PATH /usr/local/nginx/bin:$PATH
+
+
+                                           7.  ADD :->
+
+ ADD instruction copies new files, directories or remote
+         file URLs from <src> and adds them to the filesystem of the
+         image at the path <dest>.
+		 
+        ➤ ADD hom* /mydir/ # adds all files starting with “hom"
+
+ADD also supports 2 additional sources. 
+1.	COPY files from Local VM as well Internet.
+The ADD instruction copies new files, directories or remote file URLs from <src> and adds them to the filesystem of the image at the path <dest>.
+2.	If you want to extract a TAR file inside a Docker Container or copy files from a URL or local directory, you can specify ADD Instructions inside your Dockerfile. 
+
+
+Interview question-Please avoid ADD: why??
+•	It increases docker size by adding unnecessary docker layer (layer which we cannot remove)
+•	It also downloads binary file from internet. Due to which environment becomes vulnerable.
+Solution to this problem is the below command:
+RUN wget <URL>
+•	if you want to download file from internet, Use this.
+•	Through this command as well unnecessary packages are getting downloaded.
+ if it is not required, using the below command we can remove it 
+rm -rf <file name>
+
+LAB 1-
+Here we are trying to copy “file2” and “to-be-copied” files to the “/tmp” location.
+
+So, 1st create 2 files-
+	touch file2
+	touch to-be-copied 
+
+Dockerfile-
+FROM busybox
+COPY file2 /tmp
+ADD to-be-copied /tmp
+CMD [ "sh" ]
+
+
+LAB 2-
+
+Lets see how add function is unzip the file at destination location.
+
+Create one tar file on the host machine file2.tar.gz
+	tar -cvzf file2.tar.gz ./
+
+Dockerfile-
+
+FROM busybox
+ADD file2.tar.gz /tmp
+CMD [ "sh" ]
+
+===========================================
+
+
+
+                                           8   VOLUME :->
+
+ VOLUME instruction should be used to expose
+             any database storage area, configuration storage, or files/
+             folders created by your docker container.
+			 VOL                                          ----> we can attach volume to docker containers.
+ (volume is a persistent storage, data can't be recover once u delete the container, 
+ to avoid this problm we mount VOL to docker container)
+			 
+                                           9   WORKDIR :->
+
+•	To set a working directory for a container. (when we create the container)
+•	We can use WORKDIR multiple times in a Dockerfile
+•	WORKDIR instruction is used to set the working directory for all the subsequent Dockerfile instructions.
+    Some frequently used instructions in a Dockerfile are RUN, ADD, CMD, ENTRYPOINT, and COPY. 
+•	If the WORKDIR is not manually created, it gets created automatically during the processing 
+    of the instructions. Some points to be noted when using the WORKDIR instruction are as follows: 
+•	WORKDIR does not create new intermediate Image layers.
+•	It adds metadata to the Image Config.
+•	You can have multiple WORKDIR instructions in your Dockerfile.
+•	If you use relative paths as Working Directory, it will be relative to the previous Working Directory.
+•	The default path is /
+
+	Syntax-
+      WORKDIR /path/to/workdir
+	   
+	   LAB 1-
+
+Dockerfile
+
+FROM ubuntu:latest
+WORKDIR /my-work-dir
+
+	To check the output-
+docker build -t rr .  ------------create image
+docker run -it --name container_1 rr /bin/bash    ……create container
+pwd……..use the print working directory (pwd) command, to print the working directory.
+
+Note-No need to do pwd as well bz when u go inside the container by default u will go in the mentioned directory.
+	   
+LAB 2-WORKDIR by specifying Relative Path
+Dockerfile
+FROM ubuntu:latest
+WORKDIR /my-work-dir
+RUN echo "work directory 1" > file1.txt………add the output “work directory 1 in the file1.txt inside my-work-dir
+WORKDIR /my-work-dir-2
+RUN echo "work directory 2" > file2.txt…… add the output “work directory 1 in the file1.txt inside my-work-dir-2
+
+LAB3:-
+Dockerfile 
+FROM ubuntu:latest
+ENV DIRPATH /app……………..DIRPATH=variable, /app=directory which needs to be created.
+WORKDIR $DIRPATH……………..$DIRPATH=Calling the variable.
+
+To check the output-
+sudo docker build -t workdir-demo . ----------------create the image
+sudo docker run -it workdir-demo--------------create the container
+pwd
+  
+		   
+		   
+		                                    10.ENTRYPOINT ----->
+
+ similar to CMD, used to execute command during  container creation but it executes command before CMD 
+ (it has higher priority over CMD) overwrites what cmd function does. 
+ It says once done with your docker image which command needs to be executed first 
+ when you run docker container.
+
+
+entrypoint behaves similarly to cmd. And in addition, it allows us to customize the
+ command executed at startup.
+Like with cmd, in case of multiple entrypoint entries, only the last one is considered.
+--------- --------------------------------------------------------------------------
+
+                                                 11 USER
+												 
+•	By default, a Docker Container runs as a Root user. 
+    This poses a great security threat if you deploy your applications on a large scale 
+	inside Docker Containers. 
+•	You can change or switch to a different user inside a Docker Container using the USER Instruction.
+•	For this, you first need to create a user and a group inside the Container.
+•	The USER instruction sets the user name (or UID) and optionally the user group (or GID) 
+    to use when running the image and for any RUN, CMD and ENTRYPOINT instructions that follow 
+	it in the Dockerfile
+	
+	
+		
+Syntax-
+
+USER <user>[:<group>] or
+USER <UID>[:<GID>]
+
+
+Create User-
+useradd <options> <user name>
+
+To set password for user command is-
+passwd < user name>
+
+Create group-
+groupadd <options> <group name> 
+
+Add user to the group-
+To add a new user into the group, the group is mentioned using -g option in the command useradd. 
+•	useradd -g developers new_user 
+
+To add an existing user to a group, use the usermod command 
+•	usermod -g developers existing_user 
+
+single user:
+•	gpasswd -a <user name> <group name>….
+
+mutiple user :
+•	gpasswd -M <user1,user2,…> <groupname>
+OR
+•	usermod -aG <group name> <user name>
+
+If we want to check created user, use below command ----------cat /etc/passwd
+If we want to check created group, use below command----------cat /etc/group
+
+
+Dockerfile
+
+FROM ubuntu:latest
+RUN apt-get -y update
+RUN groupadd group1 && useradd -g group1 user………..group1=groupname,username=user
+USER user……switch to the user “user”
+
+To check the output-
+docker build -t asd .
+docker run -it asd –name container-111 /bin/bash
+id----------- You can now check that the default user and the group have now changed to the one we created in the Dockerfile using the id command. Here you will observe previously we were logged in as a root user and after running the dockerfile and container creation user is switched to the new user “user” which we have created in the dockerfile.
+
+Or u can check by using following commands:
+•	If we want to check created user, use below command ----------cat /etc/passwd
+•	If we want to check created group, use below command----------cat /etc/group
+•	The file shows group information in the following format: 
+ group_name : password : group-id : list-of-members
+
+=======================================================================================================
+COPY
+•	This instruction is used to copy new files or directories from source (local VM (docker host/docker engine))
+    to the filesystem of the container at the destination.
+•	It means,If you want to copy files and directories inside a Docker Container from your Local machine, 
+    you can use the COPY instruction inside your Dockerfile. 
+•	We can’t download file from internet, only we can download it from the remote repo.
+•	It can not unzip or untar the files at destination location. 
+    So, to untar it we have to use the untar command.
+
+
+Dockerfile-
+
+FROM ubuntu:latest
+RUN apt-get -y update
+COPY to-be-copied .  --------------”file name=to-be-copied” will copy in current directory 
+
+Output-
+docker build -t image0 . --------------- create image
+docker run -it --name image0 container4 /bin/bash………..>create container
+docker attach container4
+ls…………….>to check file is copied or not
+
+
+LAB 2-
+If we want to COPY any tar file,it will COPY it but not unzip it.
+Dockerfile-
+FROM busybox
+COPY file2.tar.gz /tmp -------------------COPY tar file to tmp location.
+
+
+LAB 3-
+To unzip it we need to use untar command.
+Dockerfile-
+FROM busybox
+COPY file2.tar.gz /tmp -----------copying tar file to destination /tmp.
+WORKDIR /tmp/
+RUN tar -xvzf file2.tar.gz .  -----------------Used to untar the file
+CMD ["sh"]
+
+======================================================================================================
+                           *************ARG**********************************************
+
+FROM instructions support variables that are declared by any ARG instructions. ARG is the only instruction that may precede FROM in the Dockerfile. Let’s see the examples-
+
+LAB 1:ARG outside the build stage i.e before FROM instruction
+
+Dockerfile-
+
+ARG version=latest
+FROM ubuntu:${version}
+
+docker build -t imagepp .---------------- to create the image
+docker images………………to check whether image is created or not
+
+
+========================================================================================================	
+		   vi Dockerfile                         ----> docker file
+
+FROM ubuntu   
+RUN apt-get update -y                                                                                ---base docker images
+RUN apt-get install tomcat -y                                                                        --->dwonload app related dependancies      
+RUN apt-get install jdk-1.8.0 -y                                                                      --->dwonload app related dependancies
+COPY /var/lib/jenkins/worskpaces/maven-proect/webapp/target/webapp.war /usr/share/tomcat/webapps     --> copy file from source to destination
+CMD ['tomcat' , 'java']                 ---> if u want to start container then need to start the processes/software 
+
+
+approx size: 750 MB
+
+[ docker security comes in picture when suppose in front end we have tomcat and in backend we have
+mysql,so there must be some connection stream which connects both frontend and backend.
+so are we going to provide connection stream in the code
+so we have concept of docker secret wherein password credential are there.]
+
+or
+
+FROM tomcat
+RUN apt-get install jdk-1.8.0 -y
+COPY /var/lib/jenkins/worskpaces/maven-proect/webapp/target/webapp.war /usr/share/tomcat/webapps
+CMD ['tomcat' , 'java']
+CMD systemctl tomcat enable
+
+The main purpose of the CMD command is to launch the software required in a container.
+
+approx size: 670 MB
+	
+Please note:- You can see size of any image easily by running command docker images.
+
+Also when you run build command to create the image,only FROM,RUN,COPY commands will be excuted from
+the above file and CMD will be as it is and will reflect in docker image when created.
+
+CMD command will be executed when you run the docker run command that that cmd will be intiated.
+
+-----------------------------------------
+
+cd /root/opt/gaurav/
+
+vi index.html
+vi Dockerfile
+
+FROM ubuntu
+RUN apt-get install apache2 -y
+COPY /var/lib/jenkins/worskpaces/myjob/index.html /var/www/html      ---> in case of CICD.
+
+
+or
+
+FROM httpd
+COPY /root/opt/gaurav/index.html /var/www/html      ---> standalone docker host instance.
+
+--------------------------------------------------------------------------------------
+[
+
+RUN apt-get update -y \
+    apt-get install git -y \
+    apt-get install apache2 \
+    wget <s3 bucket URL> .
+	
+	]# you can change run in the below with this one.
+	
+	
+now create one text file under root only
+touch abc.txt
+now do below
+vi Dockerfile
+FROM ubuntu:18.04
+MAINTAINER Gaurav , testing purpose
+RUN apt-get update -y
+RUN apt-get install git -y
+COPY abc.txt  /root
+RUN apt-get install apache2 -y
+RUN mkdir -p /demo1/demo2/demo3
+WORKDIR /demo1/demo2/demo3       # here u are setting working directory as/demo1/demo2/demo3.
+                                   so everytime u login to container u will land on this location.
+								   so next time u no need to give this whole path....because your current directory
+								   will become by default demo3.
+								   working directory for container no DOCKER HOST VM
+								   so so u can write COPY abc.txt .
+								   
+COPY abc.txt /demo1/demo2/demo3
+ADD <S3 bucket URL> /demo1/demo2/demo3   #  you can remove package but layer can not be.
+RUN wget <S3 bucket URL> /demo1/demo2/demo3
+EXPOSE 80
+ENV Dev
+
+CMD ['apache2'] or CMD service apache2 start  #here update will done first and then httpd will be start.
+ENTRYPOINT apt-get update -y
+
+###please note:--docker file is nothing but a script only.
+like through powershell we create an ami id and from that we create vm.
+## if u want ro remove run wget file which is generated above
+u can remove by 
+rm -rf <s3 bucket file name>
+
+now run command below command to cross check
+
+docker build -t myfirstimage03 .
+docker run -itd --name mycontainer1 myfirstimage03 /bin/bash
+docker exec -it mycontainer1 /bin/bash
+
+cd /demo1/demo2/demo3
+ls
+
+---------------------------------------------------------------------------
+WE HAVE MADE LIGHTER IMAGE FROM THE ABOVE ONE.
+if u write one RUN...docker going to create one referenece file under var/lib/docker
+
+vi Dockerfile
+
+FROM ubuntu:18.04
+MAINTAINER prakash , testing purpose
+RUN mkdir -p /demo1/demo2/demo3
+WORKDIR /demo1/demo2/demo3                           ------> working directory for container no DOCKER HOST VM 
+RUN apt-get update -y \
+    apt-get install git -y \
+    apt-get install apache2 \
+    wget <s3 bucket URL> .
+
+COPY abc.txt /root                                                       
+EXPOSE 80
+ENV dev
+CMD ['apache2']                                     or CMD serive apache2 start
+ENTRYPOINT apt-get update -y
+
+]
+--------------------------------------------------------------------------------
+How to create custom docker images from Dockerfile?
+
+docker build -t mycustomedokcerimage .     -> -t=tag, mycustomedockerimage=custom docker image name, .(dot)=Dockerfile in the current directory
+
+
+docker run -itd --name mycontainer mycustomedokcerimage  /bin/bash
+
+---------------------------------------------------------------------------------------------------------------------------
+
+vi Dockerfile
+
+
+FROM                                           -----> docker file always starts with FROM
+MAINTAINER                                     -----> Author of the dockerfile, description about the Dockerfile
+RUN                                            -----> Download packages during docker image creation/           execute any command during image creation
+COPY                                           -----> COPY files from local VM (docker host instance)
+ADD                                            -----> COPY files from Local VM as well Internet
+
+(Please avoid ADD: why??
+It increases docker size by adding unnecessary docker layer (laeter on we can not remove the layer)
+It also donwloads binary file from internet (environment  becomes vulnerable))
+
+if you want to download file from internet then use
+RUN wget <URL>                          ---->if packages are not required then we can remove it)
+because RUN only downloads and not a part of packages
+
+-----------------------------------------------------------------------------------------------------------------------------
+
+
+smallest Dockerfile ? Ans:- FROM 
+
+Please make a note:-
+
+Docker creates referenece for containers...image...network,volumes in the below location.
+
+/var/lib/docker
+
+like if in this location if u go in containers u can see how many ids are created.
+same u can see by command docker ps -a
+
+		========================================================
+
+
+30-8-2020:
+
+
+Dockerfile examples:
+https://github.com/prakashk0301/dockerfile-examples
+https://github.com/prakashk0301/CentOS-Dockerfiles
+https://github.com/prakashk0301/tomcat-docker-dockerfile
+https://www.katacoda.com/courses/docker
+--------------------------------------------------------
+Below is sample for tomcat server.
+
+FROM ubuntu:latest
+	RUN apt-get -y update && apt-get -y upgrade
+	RUN apt-get -y install openjdk-8-jdk wget
+	RUN mkdir /usr/local/tomcat
+	RUN wget https://downloads.apache.org/tomcat/tomcat-8/v8.5.57/bin/apache-tomcat-8.5.57.tar.gz -O /tmp/tomcat.tar.gz
+
+	RUN cd /tmp && tar xvfz tomcat.tar.gz
+	RUN cp -Rv /tmp/apache-tomcat-8.5.57/* /usr/local/tomcat/
+	EXPOSE 8080
+	CMD /usr/local/tomcat/bin/catalina.sh run
+
+
+
+Node js
+
+FROM ubuntu
+	MAINTAINER Kimbro Staken
+	
+	RUN apt-get install -y software-properties-common python
+	RUN add-apt-repository ppa:chris-lea/node.js
+	RUN echo "deb http://us.archive.ubuntu.com/ubuntu/ precise universe" >> /etc/apt/sources.list
+	RUN apt-get update
+	RUN apt-get install -y nodejs
+	#RUN apt-get install -y nodejs=0.6.12~dfsg1-1ubuntu1
+	RUN mkdir /var/www
+	
+	ADD app.js /var/www/app.js
+	
+	CMD ["/usr/bin/node", "/var/www/app.js"] 
+
+
+
+
+Apache:-
+
+FROM ubuntu:12.04
+	
+	MAINTAINER Kimbro Staken version: 0.1
+	
+	RUN apt-get update && apt-get install -y apache2 && apt-get clean && rm -rf /var/lib/apt/lists/*
+	
+	ENV APACHE_RUN_USER www-data
+	ENV APACHE_RUN_GROUP www-data
+	ENV APACHE_LOG_DIR /var/log/apache2
+	
+	EXPOSE 80
+	
+	CMD ["/usr/sbin/apache2", "-D", "FOREGROUND"]
+
+
+MonGO DB
+
+FROM ubuntu
+	MAINTAINER Kimbro Staken
+	
+	RUN apt-key adv --keyserver keyserver.ubuntu.com --recv 7F0CEB10
+	RUN echo "deb http://downloads-distro.mongodb.org/repo/ubuntu-upstart dist 10gen" | tee -a /etc/apt/sources.list.d/10gen.list
+	RUN apt-get update
+	RUN apt-get -y install apt-utils
+	RUN apt-get -y install mongodb-10gen
+	
+	#RUN echo "" >> /etc/mongodb.conf
+	
+	CMD ["/usr/bin/mongod", "--config", "/etc/mongodb.conf"] 
+
+
+Mysql
+
+FROM ubuntu:12.04
+	
+	MAINTAINER Kimbro Staken version: 0.1
+	
+	ADD ./mysql-setup.sh /tmp/mysql-setup.sh
+	RUN /bin/sh /tmp/mysql-setup.sh
+	
+	# Adding this will expose mysql on a random host port. It's recommended to avoid this. Other containers on the same 
+	# host can use the service without it.
+	#EXPOSE 3306
+	
+	CMD ["/usr/sbin/mysqld"]
+
+
+                    
+------------------------------------------------------------------------------------------------------------------------
+
+Dockerfile for tomcat?
+
+
+FROM ubuntu:latest
+RUN apt-get update -y \
+    apt-get install openjdk-8-jdk && wget \
+    wget https://downloads.apache.org/tomcat/tomcat-8/v8.5.57/bin/apache-tomcat-8.5.57.tar.gz \opt
+    tar -xvzf /opt/apache-tomcat-8.5.57.tar.gz \
+    rm -rf /opt/apache-tomcat-8.5.57.tar.gz
+EXPOSE 8080
+COPY /var/lib/jenkins/workspace/myjob/webapp/target/webapp.war /usr/share/tomcat/
+CMD /usr/local/tomcat/bin/catalina.sh run
+
+
+200 MB approx size   , 76 MB ubuntu 
+
+
+or  alpine   --- 5MB     # now a days alpine has replaced ubuntu because alpine has all the featue like ubuntu with same feature
+
+
+FROM alpine:latest
+RUN apt-get update -y \
+    apt-get install openjdk-8-jdk && wget \
+    wget https://downloads.apache.org/tomcat/tomcat-8/v8.5.57/bin/apache-tomcat-8.5.57.tar.gz \opt
+    tar -xvzf /opt/apache-tomcat-8.5.57.tar.gz \
+    rm -rf /opt/apache-tomcat-8.5.57.tar.gz
+EXPOSE 8080
+COPY /var/lib/jenkins/workspace/myjob/webapp/target/webapp.war /usr/share/tomcat/
+CMD /usr/local/tomcat/bin/catalina.sh run
+
+
+132 MB approx
+
+
+or
+
+FROM tomcat:latest
+COPY /var/lib/jenkins/workspace/myjob/webapp/target/webapp.war /usr/share/tomcat/
+
+#cmd is not required here as it comes in the base image only as taking directly tomcat 
+so no need to start the process manually as it comes under from only as base image.
+------------------------------------------------
+
+nginx Dockerfile
+
+FROM ubunut:latest
+RUN apt-get update \
+    apt-get install nginx -y
+CMD systemctl start nginx
+
+
+or
+
+
+
+FROM alpine:latest
+RUN apt-get update \
+    apt-get install nginx -y
+CMD systemctl start nginx
+
+
+or
+
+
+FROM nginx:latest
+===================================================================================
+
+                                               Example 1:-
+
+Whenever we create a docker file by default we have to create “.dockerignore file”.
+Suppose we have cloned the repo from github and there are different files in the repo like index.html,
+ .git, .cache, README.md, .secrets, index-v.01.html etc. 
+ which we don’t want ,then we can add these files in the “.dockerignore file”.
+
+For demo purpose lets create the dummy files(.cache, README.md,my_script.py ) 
+mkdir fun….lets perform all these task in the fun directory.
+cd fun
+touch .git .cache .secrets README.md index-v.01.html……..create files
+
+vi .dockerignore……………………create the file and add names of the files which we want to ignore
+
+vi index.html………………………….create page which we are going to deploy and add content in it.
+
+Go inside the file add the below content
+
+<html>
+<title>My Sample Website</title>
+<h1>This is my website! Be careful whoever comes here</h1>
+<p>This is my cave of wonders where you can find abundance of ice-cream<p>
+<h2>My likes</h2>
+<p>butterscotch icecreams</p>
+</html>
+
+
+vi Dockerfile
+
+FFROM nginx:alpine……..we are using nginx image
+LABEL maintainer=”gaurav@gmail.com”............... added label
+COPY index.html /usr/share/nginx/html………….source=index.html , destination=/usr/share/nginx/html
+
+create an image and run it 
+
+Now check if you are getting the html page content on the browser or not
+
+or u can check the content by simply 
+
+curl <public ip>
+=====================================================================================================
+
+dockerfile vs Entrypoint:-
+
+Lab:-
+
+vi dockerfile
+FROM ubuntu:16.04
+CMD echo 'Welcome to docker'
+
+now create container with -it as we want to see output generated by this container.
+docker run -it <image id>  OR docker run <image id>
+result is Welcome to docker
+we can overwite this on runtime by passing this
+docker run -it <image id> echo "welcome to aws"  OR docker run -it <image id> welcome to aws
+you will get welcome to aws
+means whatever mentioned in container got overwritten by this command.
+
+we can use multiple cmd inside docker
+vi dockerfile
+FROM ubuntu:16.04
+CMD echo 'Welcome to docker'
+CMD echo 'Welcome to python'
+
+it will consider latest one and give result as Welcome to python
+
+Now entrypoint instruction:-
+
+vi dockerfile
+FROM ubuntu:16.04
+ENTRYPOINT ["echo","hi docker"]
+now execute above
+result is hi docker
+now do
+docker run -it <image id> echo 'Hi Hari'
+result as below
+
+hi docker echo 'Hi Hari'  # not overwritten but getting apended.
+
+now
+
+vi dockerfile
+FROM ubuntu:16.04
+ENTRYPOINT ["echo"]
+CMD ["hI dOCKER"]   # Here command instruction will be argument for entrypoint instruction
+                    # u will get result as hI dOCKER which is possible with help of echo 
+					  command written in entrypoint
+			
+	docker run -it <image id>
+result is 	hI dOCKER
+
+but if u do here 
+docker run -it <image id> echo 'Hi Hari'
+result is Hi Hari
+===================================================================================================
+Plese note u can search image with below command alos
+
+docker images | grep <image name/id>
+
+you can cretate container and see output directly as 
+
+docker run <image name/id>
+=================================================

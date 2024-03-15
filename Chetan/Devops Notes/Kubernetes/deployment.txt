@@ -1,0 +1,107 @@
+Deployment:->
+
+suppose we have webserver which needs to be deployed in prod server.
+you need to have many such instances of webserver running.
+supppose new version of application on docker registry then u need to deploy on docker container seamlessely..
+you dont want to upgrade all the instances all at once.you want to upgrade them one by one known as 
+rolling update.
+now if u get any issues after rolling upgrade then u should be able to roll back the changes that are recently
+carried out.
+
+suppose you like to do multiple changes in your env such as upgrading the underlying webserver version,
+as well as scaling the env and also modyfying the resource allocation.
+so u dont want to apply all changes at a once on all instead of that
+first u want to acquire a pod first make the changes so that all changes rollled out together.
+
+all these capabilities are in deployment.
+containers are incapsulated in pod and then multiple pods are deployed using replica sets or controller.
+then above that deployment on top of it.
+
+so will create defination file same as replicaset but need to change the kind.
+
+apiVersion: apps/v1
+kind: Deployment
+metdata:
+   name: myapp-replicaset
+   labels:
+     app: myapp
+     
+spec:
+  selector:
+    matchLabels:
+      env: prod
+  replicas: 3
+  template:
+	metadata:
+      name: nginx-2
+      labels:
+        env:prod
+    spec:
+      containers:
+        - name: nginx
+          image: nginx
+
+kubectl create -f <yaml file>
+kubectl get deployments
+
+deployment will automatically create the replica sets. 
+
+kubectl get replicaset
+then it will further create pods
+kubectl get pods.
+
+u will able to see the name with replica and deployment
+
+one command for all 3
+
+kubectl get all
+
+How many ReplicaSets exist on the system?
+Run the command: kubectl get replicaset or kubectl get rs
+
+How many Deployments exist on the system?
+
+Run the command: kubectl get deployments or kubectl get deploy
+
+Why do you think the deployment is not ready?
+
+Run the command: kubectl describe pods <pod-name> and look under the Events section.
+
+Create a new Deployment using the deployment-definition-1.yaml file located at /root/.
+kubectl create -f <yaml file>
+
+Create a new Deployment with the below attributes using your own deployment definition file.
+
+Name: httpd-frontend;
+Replicas: 3;
+Image: httpd:2.4-alpine
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: httpd-frontend
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      name: httpd-frontend
+  template:
+    metadata:
+      labels:
+        name: httpd-frontend
+    spec:
+      containers:
+      - name: httpd-frontend
+        image: httpd:2.4-alpine
+
+
+OR
+
+Use below command:
+
+kubectl create deployment --help then
+kubectl create deployment httpd-frontend --image=httpd:2.4-alpine --replicas=3
+u can check by kubectl get deploy
+
+============================================================================

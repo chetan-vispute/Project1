@@ -1,0 +1,249 @@
+
+   ****************************Docker Container final notes****************************:-
+                                     Why container required?
+
+we are working in a software indusry and software is not a single unit or not just a source code.
+S/W is a package which requires lot of lib,toolset,some kind of dependancies,binaries ,environemnet.
+
+You need to setup complete executeable environemnet to ur application to run on prod.
+
+With the help of docker we create an executeable image.
+image is executeable format.Image is pacakge of all those things.
+Container is required to execute that image.
+Image is application which we want to run.
+process which run an executeable image is called container.
+container is an running instance of an image.
+docker is providing executable environmnet to that container.
+container basically carring that image.
+you can have many container running the same image.
+on same machine or same host u can run unlimited container of same image,means u can serve five\
+customers on same hosting machine with same image.
+==========================================================================================
+https://hub.docker.com   # this is like maven central repo where you have all dependancies of maven.
+this is central repo for docker.
+
+you can push your image over here so that other people can also use it,'
+also you can share the details with customers or develpers so that they can also use it.
+
+=================================================================================
+                ➤ Verify complete Docker Engine SetUp & Details
+docker info
+
+# provides complete info of ur docker engine.
+
+Server:
+ Containers: 0
+  Running: 0
+  Paused: 0
+  Stopped: 0
+ Images: 0
+ Server Version: 20.10.7
+ Docker Root Dir: /var/lib/docker
+ Debug Mode: false
+ Registry: https://index.docker.io/v1/
+# you will get version informtion also here.
+=====================================================================
+* docker --info or docker
+
+You will get docker commands and management commands.
+* network and volume come under management commands.
+====================================================
+* docker --version
+* docker -v
+
+Docker version 20.10.7, build f0df350
+---------------------------------------
+docker search <name> will search images on docker hub
+
+example:-
+
+docker search tomcat
+-------------------------------------------------------
+
+docker pull <name>  will download/pull images from docker hub to local.
+
+example:-
+
+docker pull jenkins
+----------------------------------------------------------------------
+
+docker images  :- this will check list of images locally
+
+example:-
+
+docker images
+--------------------------------------------------------------------------
+docker run -i -t --name <container name> <docker image name/id> /bin/bash  
+
+example:-   docker run -i -t --name mynginx nginx /bin/bash  OR
+            docker run -it --name mynginx nginx /bin/bash 
+
+#run:- it checks the image locally,if found then create and run the container.
+       if not found then pull from docker hub and then create and run the container.
+here once you run this command ,you will be in the container but when u give command exit
+you will be out of container but if you do docker ps ,u wont find that container running.
+
+-i : interactive mode . it allows us to access terminal of container
+
+-t : terminal access
+
+/bin/bash : create container in bash shell
+
+So that we can interact with terminal in bash mode.
+-------------------------------------------------------------------
+to manually start the container...once u start then evenif u do exec and exit still you will find
+container running.
+docker start <containerId/container NAme>
+
+----------------------------------------------------------------------------
+docker ps -Display all running docker containers
+
+docker ps          - -------> list all the running container
+or
+docker container ls
+-------------------------------------------------------------------------------
+docker ps -a           ----> list all the containers (running+stopped)
+or
+docker container ls -a
+--------------------------------------------------------------------------------
+
+docker run -i -t -d -- name <container name> <docker image name/id> /bin/bash   OR
+docker run -itd -- name <container name> <docker image name/id> /bin/bash 
+
+
+--->docker container creation
+
+-d : detached mode  - once you exit from container's terminal, container gonna run in background
+ 
+ example:-
+ 
+ docker run -itd --name mynginx1 nginx /bin/bash
+ 
+ Please note :-  when u run command with itd..u wont go in container so u need to do exec post that
+ whereas when u run simply -it then u go in container and no need to do exec.
+-------------------------------------------------------------------------------
+
+                                           Port Mapping:->
+
+You cannot access running application container directly through internet.
+They are isolated unit and there is no existence of docker container outside the VM environment.
+If you want to access container application then we have port mapping concept like traffic diverting. 
+Port mapping /port forwarding.
+As a user 
+
+docker run -i -t -d -p <VM port>:<Container Port> -- name <container name> <docker image name/id> /bin/bash  
+   --->docker container creation
+  
+Examples:-
+  
+docker run -itd  -p 9000:8080 --name myjenkins jenkins
+docker run -itd  -p 9001:8080 --name mytomcat02 tomcat 
+docker run -itd  -p 9003:8080 --name myjobss jboss/wildfly
+docker run -itd  -p 9:8080 --name myjobss1 jboss/wildfly
+docker run -itd  -p 10:8080 --name myjobss2 jboss/wildfly
+docker run -itd  -p 9004:80 --name myapache02 httpd
+
+or
+
+docker container run --publish 90:80 --detach nginx
+
+or
+docker container run - -publish 80:80 --detach - -name
+<Name> <Image_Name>
+
+docker container run --publish 8081:80 --detach --name gaurav  httpd
+
+# you can create multiple container with same image and assigning differnt ports on hosting machine
+just give container name different.
+
+Means you are running multiple container on same image and same host machine which u can not
+do with vm.This is the beauty of the docker.
+
+How to Access from Browser:-
+      access jenkins - >    <VM IP>:9000
+      access tomcat - >     <VM IP>:9001
+      access jboss - >      <VM IP>:9003
+      access apache ->      <VM IP>:9004
+	  
+ ➤ Process Done:
+Dowloaded the Images form Docker Hub
+Started new Container
+Exposed port 9004 on Host Machine
+Routes traffic to the container port 80
+	  
+	  docker login                   
+ ---> if you get access denied then login with docker hub credentials
+ ===================================================================
+ example 1:-
+ 
+ docker run hello-world  or
+ docker container run hello-world
+ =====================================================================
+ ➤ Stop Container fore-ground process
+ctrl+c
+=====================================================================================
+docker stop – Stops one or more running containers
+docker stop <container id>  <container id>
+
+  -------------->delete a Docker Container
+====================================================================================
+
+docker start – Starts one or more stopped containers
+
+docker container start <container id>  <container id>
+
+# you can give first 3 to 4 digit also of docker container...docker will recognise it.
+===================================================================================
+
+docker rm <container ID>        ---> to delete existing containers 
+if you cant delete container if images are already used by some other container,  
+you can delete running container --force flag
+docker rm -f <container ID>
+docker rm <container ID> --force    ---> PLEAES DONOT DELETE CONTAINER FORCEFULLY
+========================================================================================
+
+docker rmi   <image ID/name>     
+
+----> to delete local docker images 
+(if you cant remove images if already attached to any container)
+
+docker rmi <image ID/Name> --force   ---> delete image forcefully, not recommended
+docker rmi -f   <image ID/name>
+==========================================================================================
+
+Please note that docker run and docker container run both will work
+docker relesae in 2015-16 wont accept docker container run command as it runs in new version only.
+
+docker container run  # here container is a command and run is sub command.
+=========================================================================================
+Run vs Start Container
+run: start a new container always
+start: start a existing containers
+-------------------------------------------------------------------------
+
+See logs of a specific container
+docker container logs <container_name>/<container_id>
+
+every time u refresh the page on url...u will see new log generated here in logs.
+--------------------------------------------------------------------------
+➤ See process running inside the containers
+# single container run multiple process as per archtecture of application
+#nginx arch is like mster and worket architecture.
+ngnix always find one master and one/two worker	
+
+docker container top <container_id>
+
+you will get pid and uid here.
+=======================================================================
+when u run the command:-
+
+
+➤ Looks for the image in Image Cache.
+➤ Then looks in remote docker repository (default hub.docker.com )
+➤ Download the latest version of image
+➤ Create new container based on the image
+➤ docker gives it a virtual IP on private network inside docker engine
+➤ Open port 80 on host machine and route to port 80 inside
+container
+➤ Starts container by using CMD in imager docker file.
+==========================================================================
