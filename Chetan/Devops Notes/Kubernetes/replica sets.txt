@@ -1,0 +1,81 @@
+Replicas Controller:-
+
+Helps to run multiple instance of a single pod on k8 cluster for high availability.
+
+we need more than one instance or pod at any time as any pod can be failed anytime.
+
+load balancing and scaling.
+when load increases new pods gets created and when decreses pods gets deleted.
+new pods can be deployed across the nodes.
+
+replication controller is older one and replace by replica sets
+here under template section u need to put all details when u created yaml while creating the pod.
+Rs specifies that number of required pods are running at a time.
+
+apiversion: v1
+kind: ReplicationController
+metdata:
+   name: myapp-rc
+   labels:
+     app: myapp
+	 type: front-end
+spec:
+  template:
+  
+	metadata:
+	   name: myapp-pod          		                      
+	   labels:                  
+		 app: myapp           
+		 tier: front-end      
+									 
+	spec:                      
+	  containers:                  
+		- name: nginx-container      
+		  image: nginx 
+replicas: 3
+
+now
+
+kubectl run -f <filename>
+kubectl get replicationcontroller
+
+
+kubectl get pods
+u will see name of pods with rc
+
+                                       ****replica sets
+ replica sets require selector defination which tells what pods falls under it.
+ 
+ it will consider even those pods which we created befor replica sets
+ 
+ 
+apiversion: apps/v1
+kind: Replicaset
+metdata:
+   name: myapp-replicaset
+   labels:
+     app: myapp
+	 type: front-end
+spec:
+  template:
+  
+	metadata:
+	   name: myapp-pod          		                      
+	   labels:                  
+		 app: myapp           
+		 tier: front-end      
+									 
+	spec:                      
+	  containers:                  
+		- name: nginx-container      
+		  image: nginx 
+replicas: 3
+selector:
+   matchlabels:
+     type: front-end
+	 
+	 kubectl create -f <>
+	 kubectl get replicaset
+	 
+	 
+	 
